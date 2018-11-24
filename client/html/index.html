@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    font: 12px sans-serif;
+    background-color: PapayaWhip;
+  }
+
+  text {
+    fill: #000;
+  }
+
+  h3 {
+    text-align: center
+  }
+
+  button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: none;
+  }
+
+  path.tick {
+    stroke: Blue;
+    stroke-width: 1;
+  }
+
+  path.volume {
+    fill: #cccccc;
+  }
+
+  path.line {
+    fill: none;
+    stroke: BlueViolet;
+    stroke-width: 2;
+  }
+
+  .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+  }
+
+  .crosshair {
+    cursor: crosshair;
+  }
+
+  .crosshair path.wire {
+    stroke: red;
+    stroke-dasharray: 1, 1;
+  }
+
+  .crosshair .axisannotation path {
+    fill: orange;
+  }
+</style>
+
+<body>
+  <title>Welcome to BFX Rates</title>
+  <h3>Welcome to BFX Rates</h3>
+  Currency:
+  <select name="ccy" id="ccy" onchange="update();">
+    <option value="BTC">BTC</option>
+    <option value="USD">USD</option>
+    <option value="ETH">ETH</option>
+    <option value="XRP">XRP</option>
+    <option value="EOS">EOS</option>
+    <option value="LTC">LTC</option>
+    <option value="ETC">ETC</option>
+    <option value="NEO">NEO</option>
+    <option value="EUR">EUR</option>
+    <option value="IOT">IOT</option>
+    <option value="DSH">DSH</option>
+    <option value="ZEC">ZEC</option>
+    <option value="XMR">XMR</option>
+    <option value="BTG">BTG</option>
+    <option value="OMG">OMG</option>
+    <option value="ETP">ETP</option>
+    <option value="ZRX">ZRX</option>
+    <option value="JPY">JPY</option>
+    <option value="EDO">EDO</option>
+    <option value="GBP">GBP</option>
+    <option value="SAN">SAN</option>
+  </select>
+  Period:
+  <select name="period" id="period" onchange="update();">
+    <option value="1m">1 Minute</option>
+    <option value="3m">3 Minutes</option>
+    <option value="10m">10 Minutes</option>
+    <option value="30m" selected="selected">30 Minutes</option>
+    <option value="1h">1 Hour</option>
+    <option value="3h">3 Hours</option>
+    <option value="12h">12 Hours</option>
+    <option value="1d">1 Day</option>
+    <option value="7d">7 Days</option>
+    <option value="30d">30 Days</option>
+  </select>
+  <script src="d3.v4.js"></script>
+  <script src="techan.js"></script>
+  <script src="chart.js"></script>
+  <script>update();</script>
