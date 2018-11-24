@@ -2,8 +2,8 @@ const BFX = require('bitfinex-api-node')
 const Client = require('pg').Client
 
 const bfx = new BFX({
-  apiKey: 'XMJ0ezyS2EGqU2giBxi948VSayOSrhAoazfpefvODnS',
-  apiSecret: '7Qn3DRD5vOAc8WYT7505rDFzlLSGWRq5XmF6aa6VAvY',
+  apiKey: process.env.API_KEY,
+  apiSecret: process.env.API_SECRET,
 
   ws: {
     autoReconnect: true,
