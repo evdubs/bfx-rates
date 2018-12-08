@@ -24,6 +24,7 @@ const currencies = ["BTC", "USD", "ETH", "XRP", "LTC", "EOS",
   "EUR", "ETC", "NEO", "IOT", "XMR", "DSH", "OMG", "ZEC",
   "JPY", "BTG", "ETP", "ZRX", "GBP", "EDO", "SAN"]
 
+ws.on('error', (err) => console.log(err))
 ws.on('open', () => {
   console.log('open')
   currencies.forEach((item, index) => {
