@@ -41,178 +41,108 @@ function queryTrades(symbol, period, response) {
   var min = /([0-9]+)m/
   var hour = /([0-9]+)h/
   var day = /([0-9]+)d/
+  var unit = ''
+  var next_unit = ''
+  var duration = 0
 
   switch (true) {
     case min.test(period):
-      pg_client.query(`
-select
-  date_trunc('hour', datetime) + 
-    (((date_part('minute', datetime)::integer / $2::integer) * $2::integer)
-      || ' minutes')::interval as Date,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Open,
-  max(rate) * 100 as High,
-  min(rate) * 100 as Low,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Close,
-  sum(amount) as Volume
-from
-  bfx.funding_trade
-where
-  currency = $1::text
-group by
-  Date
-order by
-  Date desc
-limit 250;
-`, [symbol, min.exec(period)[1]]).then(res => {
-          response.writeHead(200)
-          response.write(JSON.stringify(res.rows))
-          response.end()
-        }).catch(err => console.error(err.stack))
+      unit = 'minute'
+      next_unit = 'hour'
+      duration = min.exec(period)[1]
       break
     case hour.test(period):
-      pg_client.query(`
-select
-  date_trunc('day', datetime) + 
-    (((date_part('hour', datetime)::integer / $2::integer) * $2::integer)
-      || ' hours')::interval as Date,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Open,
-  max(rate) * 100 as High,
-  min(rate) * 100 as Low,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Close,
-  sum(amount) as Volume
-from
-  bfx.funding_trade
-where
-  currency = $1::text
-group by
-  Date
-order by
-  Date desc
-limit 250;
-`, [symbol, hour.exec(period)[1]]).then(res => {
-          response.writeHead(200)
-          response.write(JSON.stringify(res.rows))
-          response.end()
-        }).catch(err => console.error(err.stack))
+      unit = 'hour'
+      next_unit = 'day'
+      duration = hour.exec(period)[1]
       break
     case day.test(period):
-      pg_client.query(`
-select
-  date_trunc('month', datetime) + 
-    (((date_part('day', datetime)::integer / $2::integer) * $2::integer)
-      || ' days')::interval as Date,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Open,
-  max(rate) * 100 as High,
-  min(rate) * 100 as Low,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Close,
-  sum(amount) as Volume
-from
-  bfx.funding_trade
-where
-  currency = $1::text
-group by
-  Date
-order by
-  Date desc
-limit 250;
-`, [symbol, day.exec(period)[1]]).then(res => {
-          response.writeHead(200)
-          response.write(JSON.stringify(res.rows))
-          response.end()
-        }).catch(err => console.error(err.stack))
+      unit = 'day'
+      next_unit = 'month'
+      duration = day.exec(period)[1]
       break
     default:
       break
   }
+
+  pg_client.query(`
+select
+  date_trunc($3, datetime) + 
+    (((date_part($2, datetime)::integer / $4::integer) * $4::integer)
+      || ' ' || $2 || 's')::interval as Date,
+  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Open,
+  max(rate) * 100 as High,
+  min(rate) * 100 as Low,
+  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Close,
+  sum(amount) as Volume
+from
+  bfx.funding_trade
+where
+  currency = $1::text and
+  datetime > current_timestamp - (1250 * $4 || ' ' || $2 || 's')::interval
+group by
+  Date
+order by
+  Date desc;
+`, [symbol, unit, next_unit, duration]).then(res => {
+          response.writeHead(200)
+          response.write(JSON.stringify(res.rows))
+          response.end()
+        }).catch(err => console.error(err.stack))
 }
 
 function queryStats(symbol, period, response) {
   var min = /([0-9]+)m/
   var hour = /([0-9]+)h/
   var day = /([0-9]+)d/
+  var unit = ''
+  var next_unit = ''
+  var duration = 0
 
   switch (true) {
     case min.test(period):
-      pg_client.query(`
-select
-  date_trunc('hour', datetime) + 
-    (((date_part('minute', datetime)::integer / $2::integer) * $2::integer)
-      || ' minutes')::interval as Date,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Open,
-  max(frr) as High,
-  min(frr) as Low,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Close,
-  sum(amount_used) as Volume
-from
-  bfx.funding_stat
-where
-  currency = $1::text
-group by
-  Date
-order by
-  Date desc
-limit 250;
-    `, [symbol, min.exec(period)[1]]).then(res => {
-          response.writeHead(200)
-          response.write(JSON.stringify(res.rows))
-          response.end()
-        }).catch(err => console.error(err.stack))
+      unit = 'minute'
+      next_unit = 'hour'
+      duration = min.exec(period)[1]
       break
     case hour.test(period):
-      pg_client.query(`
-select
-  date_trunc('day', datetime) + 
-    (((date_part('hour', datetime)::integer / $2::integer) * $2::integer)
-      || ' hours')::interval as Date,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Open,
-  max(frr) as High,
-  min(frr) as Low,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Close,
-  sum(amount_used) as Volume
-from
-  bfx.funding_stat
-where
-  currency = $1::text
-group by
-  Date
-order by
-  Date desc
-limit 250;
-`, [symbol, hour.exec(period)[1]]).then(res => {
-          response.writeHead(200)
-          response.write(JSON.stringify(res.rows))
-          response.end()
-        }).catch(err => console.error(err.stack))
+      unit = 'hour'
+      next_unit = 'day'
+      duration = hour.exec(period)[1]
       break
     case day.test(period):
-      pg_client.query(`
-select
-  date_trunc('month', datetime) + 
-    (((date_part('day', datetime)::integer / $2::integer) * $2::integer)
-      || ' days')::interval as Date,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Open,
-  max(frr) as High,
-  min(frr) as Low,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Close,
-  sum(amount_used) as Volume
-from
-  bfx.funding_stat
-where
-  currency = $1::text
-group by
-  Date
-order by
-  Date desc
-limit 250;
-    `, [symbol, day.exec(period)[1]]).then(res => {
-          response.writeHead(200)
-          response.write(JSON.stringify(res.rows))
-          response.end()
-        }).catch(err => console.error(err.stack))
+      unit = 'day'
+      next_unit = 'month'
+      duration = day.exec(period)[1]
       break
     default:
       break
   }
+
+  pg_client.query(`
+select
+  date_trunc($3, datetime) + 
+    (((date_part($2, datetime)::integer / $4::integer) * $4::integer)
+      || ' ' || $2 || 's')::interval as Date,
+  trunc(avg(frr * amount_used) / avg(amount_used), 8) * 100 as Open,
+  max(frr) * 100 as High,
+  min(frr) * 100 as Low,
+  trunc(avg(frr * amount_used) / avg(amount_used), 8) * 100 as Close,
+  sum(amount_used) as Volume
+from
+  bfx.funding_stat
+where
+  currency = $1::text and
+  datetime > current_timestamp - (1250 * $4 || ' ' || $2 || 's')::interval
+group by
+  Date
+order by
+  Date desc;
+`, [symbol, unit, next_unit, duration]).then(res => {
+          response.writeHead(200)
+          response.write(JSON.stringify(res.rows))
+          response.end()
+        }).catch(err => console.error(err.stack))
 }
 
 http.createServer(function (request, response) {
