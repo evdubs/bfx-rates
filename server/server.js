@@ -79,7 +79,7 @@ from
   bfx.funding_trade
 where
   currency = $1::text and
-  datetime > current_timestamp - (1250 * $4 || ' ' || $2 || 's')::interval
+  datetime > current_timestamp - (250 * $4 || ' ' || $2 || 's')::interval
 group by
   Date
 order by
@@ -133,7 +133,7 @@ from
   bfx.funding_stat
 where
   currency = $1::text and
-  datetime > current_timestamp - (1250 * $4 || ' ' || $2 || 's')::interval
+  datetime > current_timestamp - (250 * $4 || ' ' || $2 || 's')::interval
 group by
   Date
 order by
