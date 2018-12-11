@@ -124,10 +124,10 @@ select
   date_trunc($3, datetime) + 
     (((date_part($2, datetime)::integer / $4::integer) * $4::integer)
       || ' ' || $2 || 's')::interval as Date,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) * 100 as Open,
-  max(frr) * 100 as High,
-  min(frr) * 100 as Low,
-  trunc(avg(frr * amount_used) / avg(amount_used), 8) * 100 as Close,
+  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Open,
+  max(frr) as High,
+  min(frr) as Low,
+  trunc(avg(frr * amount_used) / avg(amount_used), 8) as Close,
   sum(amount_used) as Volume
 from
   bfx.funding_stat
