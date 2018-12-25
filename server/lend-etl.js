@@ -12,11 +12,11 @@ const currencies = ["BTC", "USD", "ETH", "XRP", "LTC", "EOS",
   "JPY", "BTG", "ETP", "ZRX", "GBP", "EDO", "SAN"]
 
 setInterval(() => {
-  console.log("Hit an interval")
+  // console.log("Hit an interval")
 
   currencies.forEach((ccy, idx) => {
     setTimeout((c) => {
-      console.log(`Do something with ${c}`)
+      // console.log(`Do something with ${c}`)
       var lends = request.get(`https://api.bitfinex.com/v1/lends/${c}?limit_lends=10`,
         (err, res, body) => {
           JSON.parse(body).forEach((row, idx) => {
@@ -39,7 +39,7 @@ insert into bfx.funding_stat (
                 row["rate"],
                 row["amount_lent"],
                 row["amount_used"]]).
-              then(r => console.log('Called insert without error')).
+              // then(r => console.log('Called insert without error')).
               catch(e => console.error(e.stack))
           })
         })

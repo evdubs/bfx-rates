@@ -36,7 +36,7 @@ ws.on('open', () => {
 
 currencies.forEach((symbol, index) => {
   ws.onTrades({ symbol: `f${symbol}` }, (trades) => {
-    console.log(`${symbol} trades: ${trades}`)
+    // console.log(`${symbol} trades: ${trades}`)
     trades.forEach((trade, index) => {
       pg_client.query(`
 insert into bfx.funding_trade (
@@ -59,7 +59,7 @@ insert into bfx.funding_trade (
           trade[2],
           trade[3],
           trade[4]]).
-        then(r => console.log('Called insert without error')).
+        // then(r => console.log('Called insert without error')).
         catch(e => console.log(e.stack))
     })
   })
