@@ -21,8 +21,9 @@ pg_client.connect().
   catch(e => console.error('error connecting to DB', e.stack))
 
 const currencies = ["BTC", "USD", "ETH", "XRP", "LTC", "EOS",
-  "EUR", "ETC", "NEO", "IOT", "XMR", "DSH", "OMG", "ZEC",
-  "JPY", "BTG", "ETP", "ZRX", "GBP", "EDO", "SAN"]
+  "BAB", "BSV", "EUR", "ETC", "NEO", "IOT", "XMR", 
+  "UST", "DSH", "OMG", "ZEC", "JPY", "BTG", "ETP", 
+  "ZRX", "GBP", "EDO", "SAN"]
 
 ws.on('error', (err) => console.log(err))
 ws.on('open', () => {
