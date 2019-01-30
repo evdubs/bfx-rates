@@ -1,11 +1,10 @@
 var http = require('http')
+var https = require('https')
 var url = require('url')
 var fs = require('fs')
 var path = require('path')
 var pg = require('pg')
 var baseDirectory = path.normalize(`__dirname/..`)   // or whatever base directory you want
-
-var port = 80
 
 function serveFile(requestUrl, response) {
   try {
@@ -145,29 +144,38 @@ order by
         }).catch(err => console.error(err.stack))
 }
 
-http.createServer(function (request, response) {
-  var requestBasename = path.basename(request.url)
+http.createServer(function(req, res) {
+  res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
+  res.end();
+}).listen(80);
 
-  switch (true) {
-    case /^$/.test(requestBasename):
-      serveFile('/client/html/index.html', response)
-      break
-    case /\.js$/.test(requestBasename):
-      serveFile(`/client/js/${requestBasename}`, response)
-      break
-    case /\.trade.json$/.test(requestBasename):
-      queryTrades(requestBasename.split(".")[0], requestBasename.split(".")[1], response)
-      break
-    case /\.stat.json$/.test(requestBasename):
-      queryStats(requestBasename.split(".")[0], requestBasename.split(".")[1], response)
-      break
-    case /\.html/.test(requestBasename):
-      serveFile(`/client/html/${requestBasename}`, response)
-      break
-    default:
-      console.log(`requesting ${request.url}`)
-      break
+https.createServer({
+    key: fs.readFileSync("/etc/letsencrypt/live/bfxrates.com/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/bfxrates.com/fullchain.pem")
+  },
+  function (request, response) {
+    var requestBasename = path.basename(request.url)
+
+    switch (true) {
+      case /^$/.test(requestBasename):
+        serveFile('/client/html/index.html', response)
+        break
+      case /\.js$/.test(requestBasename):
+        serveFile(`/client/js/${requestBasename}`, response)
+        break
+      case /\.trade.json$/.test(requestBasename):
+        queryTrades(requestBasename.split(".")[0], requestBasename.split(".")[1], response)
+        break
+      case /\.stat.json$/.test(requestBasename):
+        queryStats(requestBasename.split(".")[0], requestBasename.split(".")[1], response)
+        break
+      case /\.html/.test(requestBasename):
+        serveFile(`/client/html/${requestBasename}`, response)
+        break
+      default:
+        console.log(`requesting ${request.url}`)
+        break
   }
-}).listen(port)
+}).listen(443)
 
-console.log("listening on port " + port)
+console.log("listening on http and https")
