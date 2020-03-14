@@ -33,4 +33,4 @@ group by
 on conflict (currency, datetime) do nothing;
 `).then(res => { console.log(res) }).
   catch(err => { console.error(err.stack) }).
-  finally(() => process.exit())
+  then(() => { process.exit() })

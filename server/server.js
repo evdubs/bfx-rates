@@ -44,7 +44,9 @@ function queryTrades(symbol, period, response) {
   var next_unit = ''
   var duration = 0
   var table = 'funding_trade'
+  var high_rate_ref = 'rate'
   var rate_ref = 'rate'
+  var low_rate_ref = 'rate'
 
   switch (true) {
     case min.test(period):
@@ -53,7 +55,9 @@ function queryTrades(symbol, period, response) {
       duration = min.exec(period)[1]
       if (duration == 30) {
         table = 'funding_trade_30m'
+        high_rate_ref = 'high'
         rate_ref = 'vwar'
+        low_rate_ref = 'low'
       }
       break
     case hour.test(period):
@@ -61,14 +65,18 @@ function queryTrades(symbol, period, response) {
       next_unit = 'day'
       duration = hour.exec(period)[1]
       table = 'funding_trade_30m'
+      high_rate_ref = 'high'
       rate_ref = 'vwar'
+      low_rate_ref = 'low'
       break
     case day.test(period):
       unit = 'day'
       next_unit = 'month'
       duration = day.exec(period)[1]
       table = 'funding_trade_30m'
+      high_rate_ref = 'high'
       rate_ref = 'vwar'
+      low_rate_ref = 'low'
       break
     default:
       break
@@ -80,8 +88,8 @@ select
     (((date_part($2, datetime)::integer / $4::integer) * $4::integer)
       || ' ' || $2 || 's')::interval as Date,
   trunc(avg(${rate_ref} * amount) / avg(amount), 8) * 100 as Open,
-  max(${rate_ref}) * 100 as High,
-  min(${rate_ref}) * 100 as Low,
+  max(${high_rate_ref}) * 100 as High,
+  min(${low_rate_ref}) * 100 as Low,
   trunc(avg(${rate_ref} * amount) / avg(amount), 8) * 100 as Close,
   sum(amount) as Volume
 from
