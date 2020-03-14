@@ -44,22 +44,32 @@ function queryTrades(symbol, period, response) {
   var unit = ''
   var next_unit = ''
   var duration = 0
+  var table = 'funding_trade'
+  var rate_ref = 'rate'
 
   switch (true) {
     case min.test(period):
       unit = 'minute'
       next_unit = 'hour'
       duration = min.exec(period)[1]
+      if (duration == 30) {
+        table = 'funding_trade_30m'
+        rate_ref = 'vwar'
+      }
       break
     case hour.test(period):
       unit = 'hour'
       next_unit = 'day'
       duration = hour.exec(period)[1]
+      table = 'funding_trade_30m'
+      rate_ref = 'vwar'
       break
     case day.test(period):
       unit = 'day'
       next_unit = 'month'
       duration = day.exec(period)[1]
+      table = 'funding_trade_30m'
+      rate_ref = 'vwar'
       break
     default:
       break
@@ -70,13 +80,13 @@ select
   date_trunc($3, datetime) + 
     (((date_part($2, datetime)::integer / $4::integer) * $4::integer)
       || ' ' || $2 || 's')::interval as Date,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Open,
-  max(rate) * 100 as High,
-  min(rate) * 100 as Low,
-  trunc(avg(rate * amount) / avg(amount), 8) * 100 as Close,
+  trunc(avg(${rate_ref} * amount) / avg(amount), 8) * 100 as Open,
+  max(${rate_ref}) * 100 as High,
+  min(${rate_ref}) * 100 as Low,
+  trunc(avg(${rate_ref} * amount) / avg(amount), 8) * 100 as Close,
   sum(amount) as Volume
 from
-  bfx.funding_trade
+  bfx.${table}
 where
   currency = $1::text and
   datetime > current_timestamp - (250 * $4 || ' ' || $2 || 's')::interval
