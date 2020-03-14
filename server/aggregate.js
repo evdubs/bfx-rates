@@ -3,7 +3,6 @@ var pg = require('pg')
 const pg_client = new pg.Client()
 
 pg_client.connect().
-  then(() => console.log('connected to DB')).
   catch(e => console.error('error connecting to DB', e.stack))
 
 pg_client.query(`
@@ -31,6 +30,5 @@ group by
   currency, 
   Date
 on conflict (currency, datetime) do nothing;
-`).then(res => { console.log(res) }).
-  catch(err => { console.error(err.stack) }).
+`).catch(err => { console.error(err.stack) }).
   then(() => { process.exit() })
