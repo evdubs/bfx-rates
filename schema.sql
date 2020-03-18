@@ -19,9 +19,7 @@ create table bfx.funding_trade
   constraint funding_trade_sequence_id_pkey primary key (sequence_id)
 );
 
-create index on bfx.funding_trade (currency);
-
-create index on bfx.funding_trade (datetime);
+create index on bfx.funding_trade (currency, datetime);
 
 create table bfx.funding_trade_30m
 (
