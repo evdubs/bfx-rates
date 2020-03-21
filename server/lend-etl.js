@@ -7,10 +7,39 @@ pg_client.connect().
   then(() => console.log('connected to DB')).
   catch(e => console.error('error connecting to DB', e.stack))
 
-const currencies = ["BTC", "USD", "ETH", "XRP", "LTC", "EOS",
-  "BAB", "BSV", "EUR", "ETC", "NEO", "IOT", "XMR", 
-  "UST", "DSH", "OMG", "ZEC", "JPY", "BTG", "ETP", 
-  "ZRX", "GBP", "EDO", "SAN"]
+  const currencies = [
+    "ALG",
+    "ATO",
+    "BAB",
+    "BSV",
+    "BTC",
+    "BTG",
+    "DSH",
+    "EDO",
+    "EOS",
+    "ETC",
+    "ETH",
+    "ETP",
+    "EUR",
+    "FTT",
+    "GBP",
+    "IOT",
+    "JPY",
+    "LEO",
+    "LTC",
+    "NEO",
+    "OMG",
+    "SAN",
+    "USD",
+    "UST",
+    "XAUT",
+    "XLM",
+    "XMR",
+    "XRP",
+    "XTZ",
+    "ZEC",
+    "ZRX"
+  ]
 
 setInterval(() => {
   // console.log("Hit an interval")
