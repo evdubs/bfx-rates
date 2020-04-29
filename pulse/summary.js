@@ -30,9 +30,9 @@ limit 5;
     const url = 'v2/auth/w/pulse/add'
     const nonce = (Date.now() * 1000).toString()
     const body = {
-      title: 'Top 5 Currencies by Funding Volume for Past Week',
-      content: res.rows.map(function(i) { return `${i['currency']} ${i['amount']}` }).join(`\n\n`)
-      //isPublic: 1, // make Pulse public
+      title: 'Top 5 Currencies by Funding Volume for the Past Week',
+      content: res.rows.map(function(i) { return `${i['currency']} ${i['amount']}` }).join(`\n\n`),
+      isPublic: 1, // make Pulse public
       //isPin: 1, // make Pulse pinned
     }
 
