@@ -32,13 +32,13 @@ group by
   ft.currency
 order by
   amount desc
-limit 5;
+limit 10;
     `).
     then(res => {
       const url = 'v2/auth/w/pulse/add'
       const nonce = (Date.now() * 1000).toString()
       const body = {
-        title: 'Margin Funding: Top 5 Currencies by Funding Volume for the Past Week',
+        title: 'Margin Funding: Top 10 Currencies by Funding Volume for the Past Week',
         content: res.rows.map(function(i) { return `$${i['currency']} ${i['amount']}` }).join(`\n\n`),
         isPublic: 1, // make Pulse public
         isPin: 1, // make Pulse pinned
