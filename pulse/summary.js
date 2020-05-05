@@ -37,8 +37,9 @@ limit 10;
     then(res => {
       const url = 'v2/auth/w/pulse/add'
       const nonce = (Date.now() * 1000).toString()
+      const dateStr = (new Date()).toISOString().replace(/([0-9]+-[0-9]+-[0-9]+)T.*/, '$1')
       const body = {
-        title: 'Margin Funding: Top 10 Currencies by Funding Volume for the Past Week',
+        title: `Margin Funding: Top 10 Currencies by Volume for the Past Week (${dateStr})`,
         content: res.rows.map(function(i) { return `$${i['currency']} ${i['amount']}` }).join(`\n\n`),
         isPublic: 1, // make Pulse public
         isPin: 1, // make Pulse pinned
