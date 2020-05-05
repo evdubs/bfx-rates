@@ -5,6 +5,8 @@ const request = require('request')
 const apiKey = process.env.API_KEY
 const apiSecret = process.env.API_SECRET
 
+const pg_client = new pg.Client()
+
 pg_client.connect().
   then(() => console.log('connected to DB')).
   catch(e => console.error('error connecting to DB', e.stack))
@@ -29,7 +31,7 @@ where
   ftcur.high > 0.0002 + ftprev.high;
   `).
   then(res => {
-    if (res.rows > 0) {
+    if (res.rows.length > 0) {
       const url = 'v2/auth/w/pulse/add'
       const nonce = (Date.now() * 1000).toString()
 
