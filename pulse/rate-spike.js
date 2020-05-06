@@ -8,7 +8,6 @@ const apiSecret = process.env.API_SECRET
 const pg_client = new pg.Client()
 
 pg_client.connect().
-  then(() => console.log('connected to DB')).
   catch(e => console.error('error connecting to DB', e.stack))
 
 pg_client.
