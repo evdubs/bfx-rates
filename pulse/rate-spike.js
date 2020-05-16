@@ -16,8 +16,8 @@ pg_client.
 select
 	ftcur.currency,
 	ftcur.datetime,
-	ftcur.high * 100 as cur_high,
-	ftprev.high * 100 as prev_high
+	trunc(ftcur.high * 100, 4) as cur_high,
+	trunc(ftprev.high * 100, 4) as prev_high
 from
 	bfx.funding_trade_30m ftcur
 join
