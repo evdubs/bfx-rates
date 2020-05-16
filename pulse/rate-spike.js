@@ -36,7 +36,7 @@ where
       const nonce = (Date.now() * 1000).toString()
 
       const body = {
-        title: `Margin Funding: ${res.rows.map(function(i){ return `$${i['currency']}` }).join(` `)} Rate Spike (${moment(new Date()).format(`yyyy-MM-dd HH:mm [Z]`)})`,
+        title: `Margin Funding: ${res.rows.map(function(i){ return `$${i['currency']}` }).join(` `)} Rate Spike (${moment().format(`YYYY-MM-DD HH:mm [Z]`)})`,
         content: res.rows.map(function(i) { return `$${i['currency']} lending rate increased from ${i['prev_high']}%/day to ${i['cur_high']}%/day` }).join(`\n\n`),
         isPublic: 1, // make Pulse public
         isPin: 1, // make Pulse pinned
