@@ -66,12 +66,6 @@ where
         if (err) {
           return console.error(err)
         }
-
-        if (body.isPublic) {
-          console.log(`public post - ${err} ${data}`)
-        } else {
-          console.log(`private post - ${err} ${data}`)
-        }
       })
     }
     pg_client.end()
