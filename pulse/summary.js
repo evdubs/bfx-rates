@@ -16,7 +16,10 @@ prices.tickerPrices().then(tickerPrices => {
   pg_client.
     query(`
 select
-  cs.symbol,
+  case
+    when cs.symbol is null then ft.currency
+    else cs.symbol
+  end as currency,
   sum(ft.amount * p.price)::money as amount
 from
   bfx.funding_trade_30m ft
@@ -26,7 +29,7 @@ join
   }).join(" union select ")}) p
 on
   ft.currency = p.currency
-join
+left outer join
   bfx.currency_symbol cs
 on
   ft.currency = cs.currency

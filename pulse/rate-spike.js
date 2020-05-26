@@ -14,7 +14,10 @@ pg_client.connect().
 pg_client.
   query(`
 select
-	cs.symbol,
+  case
+    when cs.symbol is null then ft.currency
+    else cs.symbol
+  end as currency,
 	ftcur.datetime,
 	trunc(ftcur.high * 100, 4) as cur_high,
 	trunc(ftprev.high * 100, 4) as prev_high
@@ -25,7 +28,7 @@ join
 on
 	ftcur.currency = ftprev.currency and
   ftcur.datetime = ftprev.datetime + interval '30 minutes'
-join
+left outer join
   bfx.currency_symbol cs
 on
   ftcur.currency = cs.currency
