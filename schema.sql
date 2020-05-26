@@ -32,3 +32,9 @@ create table bfx.funding_trade_30m
   constraint funding_trade_30m_currency_datetime_pkey primary key (currency, datetime)
 );
 
+create table bfx.currency_symbol
+(
+  currency text not null,
+  symbol text not null,
+  constraint symbol_currency_currency_pkey primary key (currency)
+);

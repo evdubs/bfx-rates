@@ -16,7 +16,7 @@ prices.tickerPrices().then(tickerPrices => {
   pg_client.
     query(`
 select
-  ft.currency,
+  cs.symbol,
   sum(ft.amount * p.price)::money as amount
 from
   bfx.funding_trade_30m ft
@@ -26,6 +26,10 @@ join
   }).join(" union select ")}) p
 on
   ft.currency = p.currency
+join
+  bfx.currency_symbol cs
+on
+  ft.currency = cs.currency
 where
   ft.datetime > current_timestamp - interval '1 week'
 group by

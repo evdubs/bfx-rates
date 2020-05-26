@@ -14,7 +14,7 @@ pg_client.connect().
 pg_client.
   query(`
 select
-	ftcur.currency,
+	cs.symbol,
 	ftcur.datetime,
 	trunc(ftcur.high * 100, 4) as cur_high,
 	trunc(ftprev.high * 100, 4) as prev_high
@@ -24,7 +24,11 @@ join
 	bfx.funding_trade_30m ftprev
 on
 	ftcur.currency = ftprev.currency and
-	ftcur.datetime = ftprev.datetime + interval '30 minutes'
+  ftcur.datetime = ftprev.datetime + interval '30 minutes'
+join
+  bfx.currency_symbol cs
+on
+  ftcur.currency = cs.currency
 where
 	ftcur.datetime = (select max(datetime) from bfx.funding_trade_30m) and
 	ftcur.high > 2 * ftprev.high and
