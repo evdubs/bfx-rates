@@ -15,7 +15,7 @@ pg_client.
   query(`
 select
   case
-    when cs.symbol is null then ft.currency
+    when cs.symbol is null then ftcur.currency
     else cs.symbol
   end as currency,
 	ftcur.datetime,
