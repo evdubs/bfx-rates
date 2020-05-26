@@ -48,8 +48,6 @@ where
 
       const rawBody = JSON.stringify(body)
 
-      console.log(`${rawBody}`)
-
       let signature = `/api/${url}${nonce}${rawBody}`
       signature = crypto.
         createHmac('sha384', apiSecret).
