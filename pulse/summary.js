@@ -36,7 +36,10 @@ on
 where
   ft.datetime > current_timestamp - interval '1 week'
 group by
-  ft.currency
+  case
+    when cs.symbol is null then ft.currency
+    else cs.symbol
+  end
 order by
   amount desc
 limit 10;
