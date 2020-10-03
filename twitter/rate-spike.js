@@ -1,0 +1,95 @@
+const request = require('request')
+const moment = require('moment')
+const pg = require('pg')
+const OAuth = require('oauth-1.0a')
+const crypto = require('crypto')
+const qs = require('querystring')
+
+const consumerKey = process.env.CONSUMER_KEY
+const consumerSecret = process.env.CONSUMER_SECRET
+
+const tokenKey = process.env.TOKEN_KEY
+const tokenSecret = process.env.TOKEN_SECRET
+
+const pg_client = new pg.Client()
+
+pg_client.connect().
+  catch(e => console.error('error connecting to DB', e.stack))
+
+pg_client.
+  query(`
+select
+  case
+    when cs.symbol is null then ftcur.currency
+    else cs.symbol
+  end as currency,
+	ftcur.datetime,
+	trunc(ftcur.high * 100, 4) as cur_high,
+	trunc(ftprev.high * 100, 4) as prev_high
+from
+	bfx.funding_trade_30m ftcur
+join
+	bfx.funding_trade_30m ftprev
+on
+	ftcur.currency = ftprev.currency and
+  ftcur.datetime = ftprev.datetime + interval '30 minutes'
+left outer join
+  bfx.currency_symbol cs
+on
+  ftcur.currency = cs.currency
+where
+	ftcur.datetime = (select max(datetime) from bfx.funding_trade_30m) and
+	ftcur.high > 2 * ftprev.high and
+  ftcur.high > 0.0002 + ftprev.high;
+  `).
+  then(res => {
+    if (res.rows.length > 0) {
+      const oauth = OAuth({
+        consumer: {
+          key: consumerKey,
+          secret: consumerSecret
+        },
+        signature_method: 'HMAC-SHA1',
+        hash_function(base_string, key) {
+          return crypto
+            .createHmac('sha1', key)
+            .update(base_string)
+            .digest('base64')
+        }
+      })
+
+      const request_data = {
+        url: 'https://api.twitter.com/1.1/statuses/update.json',
+        method: 'POST',
+        data: {
+          status: `Margin Lending: ${res.rows.map(function (i) { return `$${i['currency']}` }).join(` `)} Rate Spike (${moment().format(`YYYY-MM-DD HH:mm [Z]`)})\n` +
+            res.rows.map(function (i) { return `$${i['currency']} lending rate increased from ${i['prev_high']}%/day to ${i['cur_high']}%/day` }).join(`\n\n`)
+        },
+      }
+
+      const token = {
+        key: tokenKey,
+        secret: tokenSecret,
+      }
+
+      const auth = oauth.authorize(request_data, token);
+
+      request(
+        {
+          url: request_data.url,
+          method: request_data.method,
+          headers: {
+            'Authorization': 'OAuth ' + qs.stringify(auth, ',', '=')
+          },
+          form: request_data.data
+        },
+        function (error, response, body) {
+        }
+      )
+    }
+    pg_client.end()
+  }).
+  catch(err => {
+    console.error(err)
+    pg_client.end()
+  })
