@@ -62,8 +62,12 @@ where
         url: 'https://api.twitter.com/1.1/statuses/update.json',
         method: 'POST',
         data: {
-          status: `Margin Lending: ${res.rows.map(function (i) { return `$${i['currency']}` }).join(` `)} Rate Spike (${moment().format(`YYYY-MM-DD HH:mm [Z]`)})\n` +
-            res.rows.map(function (i) { return `$${i['currency']} lending rate increased from ${i['prev_high']}%/day to ${i['cur_high']}%/day` }).join(`\n\n`)
+          status: `#Bitfinex Lending Rates\n` +
+            `${res.rows.map(function (i) { return `$${i['currency']}` }).join(` `)} Rate Spike (${moment().format(`YYYY-MM-DD HH:mm [Z]`)}) 📈\n` +
+            res.rows.map(function (i) { return `$${i['currency']} lending rate increased from ${i['prev_high']}%/day to ${i['cur_high']}%/day` }).join(`\n`) +
+            `\n\n` +
+            `View Lending Rates:\n` +
+            res.rows.map(function (i) { return `https://bitfinex.com/f/${i['currency']}` }).join(`\n`)
         },
       }
 
@@ -84,6 +88,9 @@ where
           form: request_data.data
         },
         function (error, response, body) {
+          if (error) {
+            console.log(error)
+          }
         }
       )
     }
