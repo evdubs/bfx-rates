@@ -192,6 +192,7 @@ https.createServer({
         break
       default:
         console.log(`requesting ${request.url}`)
+        response.end()
         break
   }
 }).listen(443)
