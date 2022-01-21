@@ -11,12 +11,9 @@ const consumerSecret = process.env.CONSUMER_SECRET
 const tokenKey = process.env.TOKEN_KEY
 const tokenSecret = process.env.TOKEN_SECRET
 
-const pg_client = new pg.Client()
+const pg_pool = new pg.Pool()
 
-pg_client.connect().
-  catch(e => console.error('error connecting to DB', e.stack))
-
-pg_client.
+pg_pool.
   query(`
 select
   ftcur.currency as short_currency,
@@ -95,9 +92,9 @@ where
         }
       )
     }
-    pg_client.end()
+    pg_pool.end()
   }).
   catch(err => {
     console.error(err)
-    pg_client.end()
+    pg_pool.end()
   })

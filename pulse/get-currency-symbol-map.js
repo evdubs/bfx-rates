@@ -1,17 +1,13 @@
 const fetch = require('node-fetch')
 const pg = require('pg')
 
-const pg_client = new pg.Client()
-
-pg_client.connect().
-  then(() => console.log('connected to DB')).
-  catch(e => console.error('error connecting to DB', e.stack))
+const pg_pool = new pg.Pool()
 
 fetch(`https://api-pub.bitfinex.com/v2/conf/pub:map:currency:sym`).
   then(res => res.json()).
   then(res => res.map(function(outer) {
     outer.map(function(s) {
-      pg_client.query(`
+      pg_pool.query(`
 insert into bfx.currency_symbol (
   currency,
   symbol
@@ -31,5 +27,5 @@ update set
 
 // ugly hack to get this program to finally terminate
 setTimeout(function() {
-  pg_client.end()
+  pg_pool.end()
 }, 10000)

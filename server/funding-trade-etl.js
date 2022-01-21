@@ -1,5 +1,5 @@
 const BFX = require('bitfinex-api-node')
-const Client = require('pg').Client
+const pg = require('pg')
 
 const bfx = new BFX({
   apiKey: process.env.API_KEY,
@@ -14,35 +14,51 @@ const bfx = new BFX({
 
 const ws = bfx.ws(2)
 
-const pg_client = new Client()
-
-pg_client.connect().
-  then(() => console.log('connected to DB')).
-  catch(e => console.error('error connecting to DB', e.stack))
+const pg_pool = new pg.Pool()
 
 const currencies = [
+  "ADA",
   "ALG",
   "ATO",
-  "BAB",
+  "AVAX",
+  "AXS",
+  "BCHN",
   "BSV",
   "BTC",
   "BTG",
+  "COMP",
+  "DAI",
+  "DOGE",
+  "DOT",
   "DSH",
   "EDO",
+  "EGLD",
   "EOS",
   "ETC",
   "ETH",
   "ETP",
   "EUR",
+  "EUT",
+  "FIL",
+  "FTM",
   "FTT",
   "GBP",
   "IOT",
   "JPY",
   "LEO",
+  "LINK",
   "LTC",
+  "LUNA",
+  "MATIC",
+  "MKR",
   "NEO",
   "OMG",
   "SAN",
+  "SHIB",
+  "SOL",
+  "SUSHI",
+  "TRX",
+  "UNI",
   "USD",
   "UST",
   "XAUT",
@@ -50,6 +66,7 @@ const currencies = [
   "XMR",
   "XRP",
   "XTZ",
+  "YFI",
   "ZEC",
   "ZRX"
 ]
@@ -68,7 +85,7 @@ currencies.forEach((symbol, index) => {
   ws.onTrades({ symbol: `f${symbol}` }, (trades) => {
     // console.log(`${symbol} trades: ${trades}`)
     trades.forEach((trade, index) => {
-      pg_client.query(`
+      pg_pool.query(`
 insert into bfx.funding_trade (
   currency,
   datetime,

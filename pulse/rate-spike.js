@@ -6,12 +6,9 @@ const request = require('request')
 const apiKey = process.env.API_KEY
 const apiSecret = process.env.API_SECRET
 
-const pg_client = new pg.Client()
+const pg_pool = new pg.Pool()
 
-pg_client.connect().
-  catch(e => console.error('error connecting to DB', e.stack))
-
-pg_client.
+pg_pool.
   query(`
 select
   case
@@ -73,9 +70,9 @@ where
         }
       })
     }
-    pg_client.end()
+    pg_pool.end()
   }).
   catch(err => { 
     console.error(err) 
-    pg_client.end()
+    pg_pool.end()
   })

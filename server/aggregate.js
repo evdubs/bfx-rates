@@ -1,11 +1,11 @@
 var pg = require('pg')
 
-const pg_client = new pg.Client()
+const pg_pool = new pg.Pool()
 
-pg_client.connect().
+pg_pool.connect().
   catch(e => console.error('error connecting to DB', e.stack))
 
-pg_client.query(`
+pg_pool.query(`
 insert into
   bfx.funding_trade_30m
 select

@@ -30,11 +30,7 @@ function serveFile(requestUrl, response) {
   }
 }
 
-const pg_client = new pg.Client()
-
-pg_client.connect().
-  then(() => console.log('connected to DB')).
-  catch(e => console.error('error connecting to DB', e.stack))
+const pg_pool = new pg.Pool()
 
 function queryTrades(symbol, period, response) {
   var min = /([0-9]+)m/
@@ -82,7 +78,7 @@ function queryTrades(symbol, period, response) {
       break
   }
 
-  pg_client.query(`
+  pg_pool.query(`
 select
   date_trunc($3, datetime) + 
     (((date_part($2, datetime)::integer / $4::integer) * $4::integer)
@@ -136,7 +132,7 @@ function queryStats(symbol, period, response) {
       break
   }
 
-  pg_client.query(`
+  pg_pool.query(`
 select
   date_trunc($3, datetime) + 
     (((date_part($2, datetime)::integer / $4::integer) * $4::integer)

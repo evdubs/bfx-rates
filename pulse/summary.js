@@ -6,14 +6,10 @@ const request = require('request')
 const apiKey = process.env.API_KEY
 const apiSecret = process.env.API_SECRET
 
-const pg_client = new pg.Client()
+const pg_pool = new pg.Pool()
 
 prices.tickerPrices().then(tickerPrices => { 
-  pg_client.connect().
-    then(() => console.log('connected to DB')).
-    catch(e => console.error('error connecting to DB', e.stack))
-
-  pg_client.
+  pg_pool.
     query(`
 select
   case
@@ -87,10 +83,10 @@ limit 10;
         }
       })
 
-      pg_client.end()
+      pg_pool.end()
     }).
     catch(err => { 
       console.error(err) 
-      pg_client.end()
+      pg_pool.end()
     })
 })

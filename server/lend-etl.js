@@ -1,45 +1,62 @@
 const request = require('request')
 const pg = require('pg')
 
-const pg_client = new pg.Client()
+const pg_pool = new pg.Pool()
 
-pg_client.connect().
-  then(() => console.log('connected to DB')).
-  catch(e => console.error('error connecting to DB', e.stack))
-
-  const currencies = [
-    "ALG",
-    "ATO",
-    "BAB",
-    "BSV",
-    "BTC",
-    "BTG",
-    "DSH",
-    "EDO",
-    "EOS",
-    "ETC",
-    "ETH",
-    "ETP",
-    "EUR",
-    "FTT",
-    "GBP",
-    "IOT",
-    "JPY",
-    "LEO",
-    "LTC",
-    "NEO",
-    "OMG",
-    "SAN",
-    "USD",
-    "UST",
-    "XAUT",
-    "XLM",
-    "XMR",
-    "XRP",
-    "XTZ",
-    "ZEC",
-    "ZRX"
-  ]
+const currencies = [
+  "ADA",
+  "ALG",
+  "ATO",
+  "AVAX",
+  "AXS",
+  "BCHN",
+  "BSV",
+  "BTC",
+  "BTG",
+  "COMP",
+  "DAI",
+  "DOGE",
+  "DOT",
+  "DSH",
+  "EDO",
+  "EGLD",
+  "EOS",
+  "ETC",
+  "ETH",
+  "ETP",
+  "EUR",
+  "EUT",
+  "FIL",
+  "FTM",
+  "FTT",
+  "GBP",
+  "IOT",
+  "JPY",
+  "LEO",
+  "LINK",
+  "LTC",
+  "LUNA",
+  "MATIC",
+  "MKR",
+  "NEO",
+  "OMG",
+  "SAN",
+  "SHIB",
+  "SOL",
+  "SUSHI",
+  "TRX",
+  "UNI",
+  "USD",
+  "UST",
+  "XAUT",
+  "XLM",
+  "XMR",
+  "XRP",
+  "XTZ",
+  "YFI",
+  "ZEC",
+  "ZRX"
+]
 
 setInterval(() => {
   // console.log("Hit an interval")
@@ -51,7 +68,7 @@ setInterval(() => {
         (err, res, body) => {
           try {
             JSON.parse(body).forEach((row, idx) => {
-              pg_client.query(`
+              pg_pool.query(`
 insert into bfx.funding_stat (
   currency,
   datetime,
