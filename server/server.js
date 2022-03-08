@@ -1,23 +1,21 @@
 var http = require('http')
 var https = require('https')
-var url = require('url')
 var fs = require('fs')
 var path = require('path')
 var pg = require('pg')
 var baseDirectory = path.normalize(`__dirname/..`)   // or whatever base directory you want
 
-function serveFile(requestUrl, response) {
+function serveFile(requestUrl, response, mimeType) {
   try {
     console.log(requestUrl)
-    var parsedUrl = url.parse(requestUrl)
 
     // need to use path.normalize so people can't access directories underneath baseDirectory
-    var fsPath = baseDirectory + path.normalize(parsedUrl.pathname)
+    var fsPath = baseDirectory + path.normalize(requestUrl)
 
     var fileStream = fs.createReadStream(fsPath)
     fileStream.pipe(response)
     fileStream.on('open', function () {
-      response.writeHead(200)
+      response.writeHead(200, {'Content-Type': mimeType})
     })
     fileStream.on('error', function (e) {
       response.writeHead(404)     // assume the file doesn't exist
@@ -98,7 +96,7 @@ group by
 order by
   Date desc;
 `, [symbol, unit, next_unit, duration]).then(res => {
-          response.writeHead(200)
+          response.writeHead(200, {'Content-Type': 'application/json'})
           response.write(JSON.stringify(res.rows))
           response.end()
         }).catch(err => console.error(err.stack))
@@ -152,7 +150,7 @@ group by
 order by
   Date desc;
 `, [symbol, unit, next_unit, duration]).then(res => {
-          response.writeHead(200)
+          response.writeHead(200, {'Content-Type': 'application/json'})
           response.write(JSON.stringify(res.rows))
           response.end()
         }).catch(err => console.error(err.stack))
@@ -172,10 +170,10 @@ https.createServer({
 
     switch (true) {
       case /^$/.test(requestBasename):
-        serveFile('/client/html/index.html', response)
+        serveFile('/client/html/index.html', response, 'text/html')
         break
       case /\.js$/.test(requestBasename):
-        serveFile(`/client/js/${requestBasename}`, response)
+        serveFile(`/client/js/${requestBasename}`, response, 'application/javascript')
         break
       case /\.trade.json$/.test(requestBasename):
         queryTrades(requestBasename.split(".")[0], requestBasename.split(".")[1], response)
@@ -184,7 +182,7 @@ https.createServer({
         queryStats(requestBasename.split(".")[0], requestBasename.split(".")[1], response)
         break
       case /\.html/.test(requestBasename):
-        serveFile(`/client/html/${requestBasename}`, response)
+        serveFile(`/client/html/${requestBasename}`, response, 'text/html')
         break
       default:
         console.log(`requesting ${request.url}`)
