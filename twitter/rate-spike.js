@@ -76,7 +76,7 @@ where
             res.rows.map(function (i) { return `$${i['currency']} lending rate increased from ${i['prev_high']}%/day to ${i['cur_high']}%/day` }).join(`\n`) +
             `\n\n` +
             `View Lending Rates:\n` +
-            res.rows.map(function (i) { return `https://bitfinex.com/f/${i['short_currency']}?demo=true` }).join(`\n`)
+            res.rows.map(function (i) { return `https://trading.bitfinex.com/f/${i['short_currency']}?demo=true` }).join(`\n`)
         },
       }
 
