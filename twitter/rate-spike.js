@@ -29,7 +29,7 @@ from
 join
   (select
     currency,
-    datetime,
+    max(datetime) as datetime,
     max(high) as high
   from
     bfx.funding_trade_30m ftm
@@ -37,8 +37,7 @@ join
     datetime >= (select max(datetime) from bfx.funding_trade_30m) - interval '1 day' and
     datetime <= (select max(datetime) from bfx.funding_trade_30m) - interval '30 minutes'
   group by
-    currency,
-    datetime) ftprev
+    currency) ftprev
 on
 	ftcur.currency = ftprev.currency and
   ftcur.datetime = ftprev.datetime + interval '30 minutes'
