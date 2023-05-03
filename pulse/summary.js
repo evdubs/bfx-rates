@@ -53,8 +53,6 @@ limit 10;
 
       const rawBody = JSON.stringify(body)
 
-      console.log(`${rawBody}`)
-
       let signature = `/api/${url}${nonce}${rawBody}`
       signature = crypto.
         createHmac('sha384', apiSecret).
@@ -74,12 +72,6 @@ limit 10;
       request.post(options, (err, response, data) => {
         if (err) {
           return console.error(err)
-        }
-
-        if (body.isPublic) {
-          console.log(`public post - ${err} ${data}`)
-        } else {
-          console.log(`private post - ${err} ${data}`)
         }
       })
 
