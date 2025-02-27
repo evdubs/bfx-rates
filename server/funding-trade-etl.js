@@ -19,41 +19,33 @@ const pg_pool = new pg.Pool()
 const currencies = [
   "ADA",
   "ALG",
+  "APE",
+  "APT",
   "ATO",
   "AVAX",
-  "AXS",
   "BCHN",
-  "BSV",
   "BTC",
-  "BTG",
   "COMP",
   "DAI",
   "DOGE",
   "DOT",
   "DSH",
-  "EDO",
   "EGLD",
   "EOS",
   "ETC",
   "ETH",
-  "ETP",
+  "ETHW",
   "EUR",
-  "EUT",
   "FIL",
-  "FTM",
-  "FTT",
   "GBP",
   "IOT",
   "JPY",
   "LEO",
   "LINK",
   "LTC",
-  "LUNA",
   "MATIC",
   "MKR",
   "NEO",
-  "OMG",
-  "SAN",
   "SHIB",
   "SOL",
   "SUSHI",
@@ -65,8 +57,6 @@ const currencies = [
   "XLM",
   "XMR",
   "XRP",
-  "XTZ",
-  "YFI",
   "ZEC",
   "ZRX"
 ]
@@ -80,6 +70,8 @@ ws.on('open', () => {
   })
   ws.auth()
 })
+
+pg_pool.on('error', (err) => console.log(error))
 
 currencies.forEach((symbol, index) => {
   ws.onTrades({ symbol: `f${symbol}` }, (trades) => {
