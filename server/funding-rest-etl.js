@@ -55,7 +55,7 @@ setInterval(() => {
     setTimeout((c) => {
       // console.log(`Do something with ${c}`)
       try {
-        var funds = request.get(`https://api-pub.bitfinex.com/v2/trades/f${c}?limit=1000`,
+        var funds = request.get(`https://api-pub.bitfinex.com/v2/trades/f${c}/hist?limit=1000`,
           (err, res, body) => {
             JSON.parse(body).forEach((row, idx) => {
               pg_pool.query(`
