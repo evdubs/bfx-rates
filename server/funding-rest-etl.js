@@ -54,9 +54,9 @@ setInterval(() => {
   currencies.forEach((ccy, idx) => {
     setTimeout((c) => {
       // console.log(`Do something with ${c}`)
-      var lends = request.get(`https://api.bitfinex.com/v2/trades/f${c}?limit=1000`,
-        (err, res, body) => {
-          try {
+      try {
+        var lends = request.get(`https://api.bitfinex.com/v2/trades/f${c}?limit=1000`,
+          (err, res, body) => {
             JSON.parse(body).forEach((row, idx) => {
               pg_pool.query(`
 insert into bfx.funding_trade (
@@ -79,13 +79,13 @@ insert into bfx.funding_trade (
                 row[2],
                 row[3],
                 row[4]]).
-              // then(r => console.log('Called insert without error')).
-              catch(e => console.log(e.stack))
+                // then(r => console.log('Called insert without error')).
+                catch(e => console.log(e.stack))
             })
-          } catch (err) { // JSON.parse error
-            console.error(err.stack)
-          }
-        })
+          })
+      } catch (err) { // JSON.parse error
+        console.error(err.stack)
+      }
     }, 1000 * 10 * idx, ccy)
   })
 }, 1000 * 60 * 10)

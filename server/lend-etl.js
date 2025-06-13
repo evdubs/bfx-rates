@@ -54,9 +54,9 @@ setInterval(() => {
   currencies.forEach((ccy, idx) => {
     setTimeout((c) => {
       // console.log(`Do something with ${c}`)
-      var lends = request.get(`https://api.bitfinex.com/v1/lends/${c}?limit_lends=10`,
-        (err, res, body) => {
-          try {
+      try {
+        var lends = request.get(`https://api.bitfinex.com/v1/lends/${c}?limit_lends=10`,
+          (err, res, body) => {
             JSON.parse(body).forEach((row, idx) => {
               pg_pool.query(`
 insert into bfx.funding_stat (
@@ -73,17 +73,17 @@ insert into bfx.funding_stat (
   $5::numeric
 ) on conflict (currency, datetime) do nothing;
 `, [c,
-                  row["timestamp"],
-                  row["rate"],
-                  row["amount_lent"],
-                  row["amount_used"]]).
+                row["timestamp"],
+                row["rate"],
+                row["amount_lent"],
+                row["amount_used"]]).
                 // then(r => console.log('Called insert without error')).
                 catch(e => console.error(e.stack))
             })
-          } catch (err) { // JSON.parse error
-            console.error(err.stack)
-          }
-        })
+          })
+      } catch (err) { // JSON.parse error
+        console.error(err.stack)
+      }
     }, 1000 * 10 * idx, ccy)
   })
 }, 1000 * 60 * 60)
