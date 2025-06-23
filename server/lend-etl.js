@@ -55,7 +55,7 @@ setInterval(() => {
     setTimeout((c) => {
       // console.log(`Do something with ${c}`)
       try {
-        var lends = request.get(`https://api.bitfinex.com/v1/lends/${c}?limit_lends=100`,
+        var lends = request.get(`https://api.bitfinex.com/v1/lends/${c}?limit_lends=25`,
           (err, res, body) => {
             var parsedBody = JSON.parse(body)
             if (Array.isArray(parsedBody)) {
