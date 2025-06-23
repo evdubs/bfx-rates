@@ -57,8 +57,10 @@ setInterval(() => {
       try {
         var funds = request.get(`https://api-pub.bitfinex.com/v2/trades/f${c}/hist?limit=1000`,
           (err, res, body) => {
-            JSON.parse(body).forEach((row, idx) => {
-              pg_pool.query(`
+            var parsedBody = JSON.parse(body)
+            if (Array.isArray(parsedBody)) {
+              parsedBody.forEach((row, idx) => {
+                pg_pool.query(`
 insert into bfx.funding_trade (
   currency,
   datetime,
@@ -74,14 +76,15 @@ insert into bfx.funding_trade (
   $5::numeric,
   $6::smallint
 ) on conflict (sequence_id) do nothing;`, [ccy,
-                row[1],
-                row[0],
-                row[2],
-                row[3],
-                row[4]]).
-                // then(r => console.log('Called insert without error')).
-                catch(e => console.log(e.stack))
-            })
+                  row[1],
+                  row[0],
+                  row[2],
+                  row[3],
+                  row[4]]).
+                  // then(r => console.log('Called insert without error')).
+                  catch(e => console.log(e.stack))
+              })
+            }
           })
       } catch (err) { // JSON.parse error
         console.error(err.stack)
