@@ -62,21 +62,21 @@ setInterval(() => {
               if (Array.isArray(parsedBody)) {
                 parsedBody.forEach((row, idx) => {
                   pg_pool.query(`
-  insert into bfx.funding_trade (
-    currency,
-    datetime,
-    sequence_id,
-    amount,
-    rate,
-    period
-  ) values (
-    $1::text,
-    to_timestamp($2::bigint / 1000),
-    $3::bigint,
-    abs($4::numeric),
-    $5::numeric,
-    $6::smallint
-  ) on conflict (sequence_id) do nothing;`, [ccy,
+insert into bfx.funding_trade (
+  currency,
+  datetime,
+  sequence_id,
+  amount,
+  rate,
+  period
+) values (
+  $1::text,
+  to_timestamp($2::bigint / 1000),
+  $3::bigint,
+  abs($4::numeric),
+  $5::numeric,
+  $6::smallint
+) on conflict (sequence_id) do nothing;`, [ccy,
                     row[1],
                     row[0],
                     row[2],

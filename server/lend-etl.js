@@ -57,10 +57,11 @@ setInterval(() => {
       try {
         var lends = request.get(`https://api.bitfinex.com/v1/lends/${c}?limit_lends=25`,
           (err, res, body) => {
-            var parsedBody = JSON.parse(body)
-            if (Array.isArray(parsedBody)) {
-              parsedBody.forEach((row, idx) => {
-                pg_pool.query(`
+            try {
+              var parsedBody = JSON.parse(body)
+              if (Array.isArray(parsedBody)) {
+                parsedBody.forEach((row, idx) => {
+                  pg_pool.query(`
 insert into bfx.funding_stat (
   currency,
   datetime,
@@ -75,16 +76,19 @@ insert into bfx.funding_stat (
   $5::numeric
 ) on conflict (currency, datetime) do nothing;
 `, [c,
-                  row["timestamp"],
-                  row["rate"],
-                  row["amount_lent"],
-                  row["amount_used"]]).
-                  // then(r => console.log('Called insert without error')).
-                  catch(e => console.error(e.stack))
-              })
+                    row["timestamp"],
+                    row["rate"],
+                    row["amount_lent"],
+                    row["amount_used"]]).
+                    // then(r => console.log('Called insert without error')).
+                    catch(e => console.error(e.stack))
+                })
+              }
+            } catch (err) { // JSON.parse error
+              console.error(err.stack)
             }
           })
-      } catch (err) { // JSON.parse error
+      } catch (err) { // request.get error
         console.error(err.stack)
       }
     }, 1000 * 10 * idx, ccy)
