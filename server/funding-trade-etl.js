@@ -16,6 +16,10 @@ const ws = bfx.ws(2)
 
 const pg_pool = new pg.Pool()
 
+pg_pool.on("error", err => {
+  console.log("error in pg_pool", err)
+})
+
 const currencies = [
   "ADA",
   "ALG",

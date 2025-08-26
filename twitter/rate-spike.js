@@ -13,6 +13,10 @@ const tokenSecret = process.env.TOKEN_SECRET
 
 const pg_pool = new pg.Pool()
 
+pg_pool.on("error", err => {
+  console.log("error in pg_pool", err)
+})
+
 pg_pool.
   query(`
 select

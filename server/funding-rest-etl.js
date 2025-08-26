@@ -3,6 +3,10 @@ const pg = require('pg')
 
 const pg_pool = new pg.Pool()
 
+pg_pool.on("error", err => {
+  console.log("error in pg_pool", err)
+})
+
 const currencies = [
   "ADA",
   "ALG",

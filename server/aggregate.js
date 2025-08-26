@@ -2,6 +2,10 @@ var pg = require('pg')
 
 const pg_pool = new pg.Pool()
 
+pg_pool.on("error", err => {
+  console.log("error in pg_pool", err)
+})
+
 pg_pool.connect().
   catch(e => console.error('error connecting to DB', e.stack))
 

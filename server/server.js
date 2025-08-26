@@ -30,6 +30,10 @@ function serveFile(requestUrl, response, mimeType) {
 
 const pg_pool = new pg.Pool()
 
+pg_pool.on("error", err => {
+  console.log("error in pg_pool", err)
+})
+
 function queryTrades(symbol, period, response) {
   var min = /([0-9]+)m/
   var hour = /([0-9]+)h/

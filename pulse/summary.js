@@ -8,6 +8,10 @@ const apiSecret = process.env.API_SECRET
 
 const pg_pool = new pg.Pool()
 
+pg_pool.on("error", err => {
+  console.log("error in pg_pool", err)
+})
+
 prices.tickerPrices().then(tickerPrices => { 
   pg_pool.
     query(`
